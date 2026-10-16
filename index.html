@@ -1,0 +1,443 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <meta name="description" content="Chess Arena — Modern interactive Two-Player Chess game for desktop, laptop, tablet, and mobile.">
+  <title>Chess Arena — Two Player Chess</title>
+  
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;600&display=swap" rel="stylesheet">
+  
+  <link rel="stylesheet" href="style.css">
+</head>
+<body data-theme="emerald">
+  <!-- Toast Notification Container -->
+  <div id="toast-container" class="toast-container" aria-live="polite"></div>
+
+  <!-- Header Navigation -->
+  <header class="app-header">
+    <div class="header-brand">
+      <div class="logo-icon">
+        <svg viewBox="0 0 45 45" width="28" height="28" fill="currentColor">
+          <path d="M 22,10 C 32.5,11 38.5,18 38,39 L 15,39 C 15,30 25,32.5 23,18" />
+          <path d="M 24,18 C 24.38,20.91 18.45,25.37 16,27 C 13,29 13.18,31.34 11,31 C 9.958,30.06 12.41,27.96 11,28 C 10,28 11.19,29.23 10,30 C 9,30 5.997,31 6,26 C 6,24 12,14 12,14 C 12,14 13.89,12.1 14,10.5 C 13.27,9.506 13.5,8.5 13.5,7.5 C 14.5,6.5 16.5,10 16.5,10 L 18.5,10 C 18.5,10 19.28,8.008 21,7 C 22,7 22,10 22,10" />
+        </svg>
+      </div>
+      <div class="brand-text">
+        <h1 class="brand-title">Chess Arena</h1>
+        <span class="brand-subtitle">Two Player Chess</span>
+      </div>
+    </div>
+
+    <!-- Quick Status Pill -->
+    <div class="turn-status-pill" id="turn-status-pill">
+      <span class="turn-dot white-dot"></span>
+      <span class="turn-text" id="turn-banner-text">White's Turn</span>
+    </div>
+
+    <!-- Top Action Toolbar -->
+    <div class="header-actions">
+      <!-- Theme Switcher -->
+      <div class="custom-select-wrapper" title="Change Board Theme">
+        <label for="theme-select" class="sr-only">Theme</label>
+        <select id="theme-select" class="theme-select" aria-label="Select board theme">
+          <option value="emerald">🌲 Emerald Classic</option>
+          <option value="wood">🪵 Warm Wood</option>
+          <option value="midnight">🌙 Midnight Slate</option>
+          <option value="amethyst">🔮 Royal Amethyst</option>
+          <option value="ocean">🌊 Deep Ocean</option>
+        </select>
+      </div>
+
+      <!-- Sound Toggle Button -->
+      <button id="btn-sound-toggle" class="icon-btn" title="Toggle Sound (Mute/Unmute)" aria-label="Toggle sound">
+        <svg id="icon-sound-on" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
+          <path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"></path>
+        </svg>
+        <svg id="icon-sound-off" class="hidden" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
+          <line x1="23" y1="9" x2="17" y2="15"></line>
+          <line x1="17" y1="9" x2="23" y2="15"></line>
+        </svg>
+      </button>
+
+      <!-- Rules / Help Button -->
+      <button id="btn-open-rules" class="icon-btn" title="Game Rules & Guide" aria-label="Open chess rules and guide">
+        <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="12" cy="12" r="10"></circle>
+          <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"></path>
+          <line x1="12" y1="17" x2="12.01" y2="17"></line>
+        </svg>
+      </button>
+    </div>
+  </header>
+
+  <!-- Main Application Container -->
+  <main class="app-layout">
+    <!-- Left / Center: Chessboard Arena -->
+    <section class="chess-arena">
+      <!-- Player 2 (Top Player - Black by default) -->
+      <div class="player-card" id="top-player-card" data-color="b">
+        <div class="player-profile">
+          <div class="player-avatar-wrapper">
+            <div class="player-avatar black-avatar">
+              <img src="assets/pieces/bK.svg" alt="Black King" class="avatar-piece-img">
+            </div>
+            <span class="player-status-badge"></span>
+          </div>
+          <div class="player-meta">
+            <div class="player-name-row">
+              <span class="player-name" id="top-player-name">Player 2 (Black)</span>
+              <span class="material-lead-badge" id="top-material-lead"></span>
+            </div>
+            <!-- Captured Pieces Tray -->
+            <div class="captured-tray" id="top-captured-tray" aria-label="Captured pieces"></div>
+          </div>
+        </div>
+        <!-- Player Timer Clock -->
+        <div class="player-clock-badge" id="top-player-clock">
+          <span class="clock-icon">⏱</span>
+          <span class="clock-digits" id="top-clock-time">--:--</span>
+        </div>
+      </div>
+
+      <!-- Chessboard Wrap -->
+      <div class="board-wrapper">
+        <div id="chessboard" class="chessboard" role="grid" aria-label="Chessboard">
+          <!-- 64 Squares dynamically injected by script.js -->
+        </div>
+      </div>
+
+      <!-- Player 1 (Bottom Player - White by default) -->
+      <div class="player-card active-turn" id="bottom-player-card" data-color="w">
+        <div class="player-profile">
+          <div class="player-avatar-wrapper">
+            <div class="player-avatar white-avatar">
+              <img src="assets/pieces/wK.svg" alt="White King" class="avatar-piece-img">
+            </div>
+            <span class="player-status-badge"></span>
+          </div>
+          <div class="player-meta">
+            <div class="player-name-row">
+              <span class="player-name" id="bottom-player-name">Player 1 (White)</span>
+              <span class="material-lead-badge" id="bottom-material-lead"></span>
+            </div>
+            <!-- Captured Pieces Tray -->
+            <div class="captured-tray" id="bottom-captured-tray" aria-label="Captured pieces"></div>
+          </div>
+        </div>
+        <!-- Player Timer Clock -->
+        <div class="player-clock-badge" id="bottom-player-clock">
+          <span class="clock-icon">⏱</span>
+          <span class="clock-digits" id="bottom-clock-time">--:--</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- Right Side: Sidebar Panel (Controls, History, Info) -->
+    <aside class="sidebar-panel">
+      <!-- Game Status Banner -->
+      <div class="game-status-card" id="game-status-card">
+        <div class="status-indicator-dot"></div>
+        <div class="status-content">
+          <h2 class="status-title" id="status-title">White to Move</h2>
+          <p class="status-desc" id="status-desc">Match in progress. Select a piece to see legal moves.</p>
+        </div>
+      </div>
+
+      <!-- Game Controls Grid -->
+      <div class="controls-section">
+        <h3 class="section-heading">Game Controls</h3>
+        <div class="controls-grid">
+          <button id="btn-new-game" class="btn btn-primary" title="Start a brand new game">
+            <span class="btn-icon">⚡</span>
+            <span>New Game</span>
+          </button>
+          
+          <button id="btn-restart" class="btn btn-secondary" title="Reset current match">
+            <span class="btn-icon">🔄</span>
+            <span>Restart</span>
+          </button>
+          
+          <button id="btn-undo" class="btn btn-secondary" title="Undo the last move">
+            <span class="btn-icon">↩️</span>
+            <span>Undo Move</span>
+          </button>
+          
+          <button id="btn-flip" class="btn btn-secondary" title="Flip board perspective">
+            <span class="btn-icon">🔁</span>
+            <span>Flip Board</span>
+          </button>
+          
+          <button id="btn-offer-draw" class="btn btn-warning" title="Offer a mutual draw to opponent">
+            <span class="btn-icon">🤝</span>
+            <span>Offer Draw</span>
+          </button>
+          
+          <button id="btn-resign" class="btn btn-danger" title="Resign current match">
+            <span class="btn-icon">🏳️</span>
+            <span>Resign</span>
+          </button>
+        </div>
+
+        <!-- Additional Settings Quick Toggles -->
+        <div class="settings-toggles">
+          <label class="toggle-control" title="Automatically flip board when turn changes for pass-and-play">
+            <input type="checkbox" id="toggle-autoflip">
+            <span class="toggle-slider"></span>
+            <span class="toggle-label">Auto-Flip on Turn</span>
+          </label>
+        </div>
+      </div>
+
+      <!-- Move History Panel -->
+      <div class="history-section">
+        <div class="history-header">
+          <h3 class="section-heading">Move History</h3>
+          <div class="history-actions">
+            <button id="btn-copy-pgn" class="btn-small" title="Copy standard PGN notation">Copy PGN</button>
+            <button id="btn-download-pgn" class="btn-small" title="Download PGN file">Download</button>
+          </div>
+        </div>
+        
+        <div class="history-table-container" id="history-container">
+          <table class="history-table" id="history-table">
+            <thead>
+              <tr>
+                <th class="th-num">#</th>
+                <th class="th-move">White</th>
+                <th class="th-move">Black</th>
+              </tr>
+            </thead>
+            <tbody id="history-body">
+              <tr class="history-empty-row">
+                <td colspan="3">Moves will appear here...</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Match Metadata / Quick Stats -->
+      <div class="stats-footer">
+        <div class="stat-pill">
+          <span class="stat-label">Total Moves:</span>
+          <span class="stat-value" id="stat-move-count">0</span>
+        </div>
+        <div class="stat-pill">
+          <span class="stat-label">Time Control:</span>
+          <span class="stat-value" id="stat-time-control">Casual (Untimed)</span>
+        </div>
+      </div>
+    </aside>
+  </main>
+
+  <!-- ==================== MODALS ==================== -->
+
+  <!-- 1. Welcome / New Game Modal -->
+  <div class="modal-backdrop" id="modal-welcome" role="dialog" aria-modal="true" aria-labelledby="welcome-title">
+    <div class="modal-card">
+      <div class="modal-header">
+        <div class="modal-badge-icon">♟️</div>
+        <h2 id="welcome-title" class="modal-title">Chess Arena</h2>
+        <p class="modal-subtitle">Two-Player Local Chess Demonstration</p>
+      </div>
+
+      <div class="modal-body">
+        <div class="welcome-intro-card">
+          <p>Play chess locally against a friend on the same computer. Player 1 controls <strong>White</strong>, and Player 2 controls <strong>Black</strong>.</p>
+        </div>
+
+        <!-- Time Control Selection -->
+        <div class="option-group">
+          <label class="option-label">Choose Clock Mode:</label>
+          <div class="clock-options-grid">
+            <button type="button" class="time-opt-btn active" data-time="0">
+              <span class="time-opt-title">Casual</span>
+              <span class="time-opt-sub">No Timer</span>
+            </button>
+            <button type="button" class="time-opt-btn" data-time="180">
+              <span class="time-opt-title">3 Min</span>
+              <span class="time-opt-sub">Blitz</span>
+            </button>
+            <button type="button" class="time-opt-btn" data-time="300">
+              <span class="time-opt-title">5 Min</span>
+              <span class="time-opt-sub">Blitz</span>
+            </button>
+            <button type="button" class="time-opt-btn" data-time="600">
+              <span class="time-opt-title">10 Min</span>
+              <span class="time-opt-sub">Rapid</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Pass-and-play Flip Preference -->
+        <div class="option-group">
+          <label class="toggle-control">
+            <input type="checkbox" id="welcome-autoflip">
+            <span class="toggle-slider"></span>
+            <span class="toggle-label">Auto-flip board each turn for face-to-face play</span>
+          </label>
+        </div>
+      </div>
+
+      <div class="modal-footer">
+        <button id="btn-start-game" class="btn btn-primary btn-large">
+          <span>Start Game</span>
+          <span class="btn-arrow">➔</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 2. Pawn Promotion Modal -->
+  <div class="modal-backdrop hidden" id="modal-promotion" role="dialog" aria-modal="true" aria-labelledby="promotion-title">
+    <div class="modal-card modal-card-compact">
+      <div class="modal-header">
+        <h3 id="promotion-title" class="modal-title">Promote Pawn</h3>
+        <p class="modal-subtitle">Select a piece to promote your pawn to:</p>
+      </div>
+      <div class="promotion-pieces-grid" id="promotion-pieces-grid">
+        <button class="promo-btn" data-piece="q" title="Queen (9 pts)">
+          <div class="promo-img-wrap" id="promo-img-q"></div>
+          <span class="promo-name">Queen</span>
+        </button>
+        <button class="promo-btn" data-piece="r" title="Rook (5 pts)">
+          <div class="promo-img-wrap" id="promo-img-r"></div>
+          <span class="promo-name">Rook</span>
+        </button>
+        <button class="promo-btn" data-piece="b" title="Bishop (3 pts)">
+          <div class="promo-img-wrap" id="promo-img-b"></div>
+          <span class="promo-name">Bishop</span>
+        </button>
+        <button class="promo-btn" data-piece="n" title="Knight (3 pts)">
+          <div class="promo-img-wrap" id="promo-img-n"></div>
+          <span class="promo-name">Knight</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 3. Draw Offer Modal -->
+  <div class="modal-backdrop hidden" id="modal-draw-offer" role="dialog" aria-modal="true" aria-labelledby="draw-offer-title">
+    <div class="modal-card modal-card-compact">
+      <div class="modal-header">
+        <div class="modal-badge-icon">🤝</div>
+        <h3 id="draw-offer-title" class="modal-title">Draw Offer</h3>
+        <p class="modal-subtitle" id="draw-offer-text">Player 1 (White) has offered a draw. Do you accept?</p>
+      </div>
+      <div class="modal-footer modal-footer-dual">
+        <button id="btn-accept-draw" class="btn btn-primary">Accept Draw</button>
+        <button id="btn-decline-draw" class="btn btn-secondary">Decline</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 4. Confirmation Dialog Modal (Generic: Restart / Resign) -->
+  <div class="modal-backdrop hidden" id="modal-confirm" role="dialog" aria-modal="true" aria-labelledby="confirm-title">
+    <div class="modal-card modal-card-compact">
+      <div class="modal-header">
+        <div class="modal-badge-icon" id="confirm-icon">⚠️</div>
+        <h3 id="confirm-title" class="modal-title">Are you sure?</h3>
+        <p class="modal-subtitle" id="confirm-text">This will reset your game in progress.</p>
+      </div>
+      <div class="modal-footer modal-footer-dual">
+        <button id="btn-confirm-yes" class="btn btn-danger">Confirm</button>
+        <button id="btn-confirm-no" class="btn btn-secondary">Cancel</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 5. Game Over Modal -->
+  <div class="modal-backdrop hidden" id="modal-gameover" role="dialog" aria-modal="true" aria-labelledby="gameover-title">
+    <div class="modal-card">
+      <div class="modal-header">
+        <div class="modal-badge-icon gameover-trophy" id="gameover-trophy">🏆</div>
+        <h2 id="gameover-title" class="modal-title">Game Over</h2>
+        <p class="modal-subtitle" id="gameover-reason">Checkmate — White Wins!</p>
+      </div>
+      
+      <div class="modal-body">
+        <div class="gameover-summary-card">
+          <div class="summary-row">
+            <span class="summary-label">Final Result:</span>
+            <span class="summary-val highlight" id="gameover-result-val">1 - 0</span>
+          </div>
+          <div class="summary-row">
+            <span class="summary-label">Total Moves:</span>
+            <span class="summary-val" id="gameover-moves-val">34</span>
+          </div>
+          <div class="summary-row">
+            <span class="summary-label">End Reason:</span>
+            <span class="summary-val" id="gameover-details-val">Checkmate</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="modal-footer modal-footer-dual">
+        <button id="btn-gameover-rematch" class="btn btn-primary btn-large">
+          <span>Play Again</span>
+        </button>
+        <button id="btn-gameover-review" class="btn btn-secondary btn-large">
+          <span>Review Board</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 6. Rules & Instructions Modal -->
+  <div class="modal-backdrop hidden" id="modal-rules" role="dialog" aria-modal="true" aria-labelledby="rules-title">
+    <div class="modal-card modal-card-wide">
+      <div class="modal-header">
+        <div class="modal-badge-icon">📖</div>
+        <h2 id="rules-title" class="modal-title">Rules & How to Play</h2>
+        <p class="modal-subtitle">Official FIDE Chess Rules & Pass-and-Play Guide</p>
+      </div>
+      
+      <div class="modal-body modal-scrollable">
+        <div class="rules-card">
+          <h4>🎯 Objective</h4>
+          <p>The goal is to checkmate your opponent's king. This occurs when the king is in check and cannot escape attack.</p>
+        </div>
+
+        <div class="rules-card">
+          <h4>👥 Two-Player Pass & Play</h4>
+          <p>Both players take turns on this device. Player 1 controls White (moves first), and Player 2 controls Black. You can use <strong>Flip Board</strong> or turn on <strong>Auto-Flip on Turn</strong> so each player faces their own army!</p>
+        </div>
+
+        <div class="rules-card">
+          <h4>♟️ Special Moves</h4>
+          <ul>
+            <li><strong>Castling (O-O / O-O-O):</strong> Move your king two squares towards a rook; the rook hops over to the adjacent square. (Neither king nor rook must have moved yet, and squares in between must be clear and not under attack).</li>
+            <li><strong>En Passant:</strong> When a pawn advances two squares from its starting position and lands adjacent to an enemy pawn, that enemy pawn can capture it diagonally on the very next move.</li>
+            <li><strong>Pawn Promotion:</strong> When a pawn reaches the 8th rank, it can immediately promote to a Queen, Rook, Bishop, or Knight!</li>
+          </ul>
+        </div>
+
+        <div class="rules-card">
+          <h4>🤝 Draw Conditions</h4>
+          <ul>
+            <li><strong>Stalemate:</strong> The player to move has no legal moves and their king is NOT in check.</li>
+            <li><strong>Insufficient Material:</strong> Neither player has enough pieces to force checkmate (e.g. King vs King, King & Bishop vs King).</li>
+            <li><strong>Threefold Repetition:</strong> The same board position occurs 3 times.</li>
+            <li><strong>50-Move Rule:</strong> 50 consecutive moves without a pawn move or capture.</li>
+            <li><strong>Mutual Agreement:</strong> Both players accept a draw via the <em>Offer Draw</em> button.</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="modal-footer">
+        <button id="btn-close-rules" class="btn btn-secondary">Close</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Include chess.js library -->
+  <script src="chess.min.js"></script>
+  <!-- Main application logic -->
+  <script src="script.js"></script>
+</body>
+</html>
